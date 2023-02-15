@@ -1,4 +1,16 @@
 # ComposeMusicPlayer
+Here is the basic architecture or flow of compose Music player which is used in the application
+![image](https://user-images.githubusercontent.com/77464933/219168756-5eadcd14-c08f-46d7-a108-6ad5a27cf8b6.png)
+
+
+It is a basic Music player functionality to play music from local storage 
+I have used the following technologies for this
+
+* Exo Player
+* Jetpack Compsoe 
+* Flow 
+* Coroutines 
+* Kotlin
 
 
 
