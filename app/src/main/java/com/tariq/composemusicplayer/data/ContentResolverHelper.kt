@@ -3,12 +3,16 @@ package com.tariq.composemusicplayer.data
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.tariq.composemusicplayer.data.model.AudioItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+
 
 class ContentResolverHelper @Inject
 constructor(@ApplicationContext val context: Context) {
@@ -20,7 +24,7 @@ constructor(@ApplicationContext val context: Context) {
         MediaStore.Audio.AudioColumns.ARTIST,
         MediaStore.Audio.AudioColumns.DATA,
         MediaStore.Audio.AudioColumns.DURATION,
-        MediaStore.Audio.AudioColumns.TITLE
+        MediaStore.Audio.AudioColumns.TITLE,
 
     )
 
@@ -54,6 +58,7 @@ constructor(@ApplicationContext val context: Context) {
                 cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
             val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
 
+
             cursor.apply {
                 if (count == 0) {
                     Log.i("Cursor", "getCursorData: ")
@@ -69,9 +74,15 @@ constructor(@ApplicationContext val context: Context) {
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             id
                         )
+                        val retriever = MediaMetadataRetriever()
+                        retriever.setDataSource(context, uri)
+                        val coverBytes = retriever.embeddedPicture
+                        val songCover: Bitmap? = if (coverBytes != null)
+                            BitmapFactory.decodeByteArray(coverBytes, 0, coverBytes.size) else null
+
 
                         audioList += AudioItem(
-                            id, uri, displayName, artist, duration, title, data)
+                            id, uri, displayName, artist, duration, title, data, songCover)
                     }
                 }
             }

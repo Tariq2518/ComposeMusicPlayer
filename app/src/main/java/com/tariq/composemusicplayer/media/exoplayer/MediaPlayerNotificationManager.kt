@@ -50,7 +50,7 @@ internal class MediaPlayerNotificationManager(
     }
 
     fun showNotification(player: Player){
-        Log.i("CLick", "showNotification: ${player.playbackState}")
+        Log.i("CLick", "showNotification: ${player}")
         notificationManager.setPlayer(player)
     }
 

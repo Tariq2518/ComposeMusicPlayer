@@ -83,7 +83,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             mediaSession.sessionToken,
             PlayerNotificationListener()
         )
-
+        notificationManager.showNotification(exoPlayer)
         serviceScope.launch {
             mediaSource.load()
         }
@@ -93,7 +93,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             setQueueNavigator(QueueNavigator(mediaSession))
             setPlayer(exoPlayer)
         }
-        notificationManager.showNotification(exoPlayer)
+
     }
 
     override fun onGetRoot(
@@ -117,6 +117,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                         result.sendResult(null)
                     }
                 }
+                Log.i("CLick", "onLoadChildren: $resultSent")
                 if (!resultSent) {
                     result.detach()
                 }
@@ -132,10 +133,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         result: Result<Bundle>
     ) {
         super.onCustomAction(action, extras, result)
-        Log.i("CLick", "onCustomAction: $action")
+
         when (action) {
             Constants.START_MEDIA_PLAY_ACTION -> {
                 notificationManager.showNotification(exoPlayer)
+                Log.i("CLick", "onCustomAction: $action -- ${exoPlayer.isPlaying}")
             }
             Constants.REFRESH_MEDIA_PLAY_ACTION -> {
                 mediaSource.refresh()
@@ -185,6 +187,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             notification: Notification,
             ongoing: Boolean
         ) {
+            Log.i("CLick", "onNotificationPosted: ${exoPlayer.isPlaying}")
             if (ongoing && !isForegroundService) {
                 ContextCompat.startForegroundService(
                     applicationContext,
@@ -221,8 +224,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-
+            Log.i("CLick", "onPrepareFromMediaId: $mediaId, -- ${mediaSource}")
             mediaSource.whenReady {
+                Log.i("CLick", "onPrepareFromMediaId: $it")
                 val itemToPlay = mediaSource.audioMediaMetadata.find {
                     it.description.mediaId == mediaId
                 }
@@ -256,6 +260,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             itemToPlay: MediaMetadataCompat?,
             playWhenReady: Boolean
         ) {
+            Log.i("CLick", "createPlayer: $playWhenReady --- ${exoPlayer}")
             val indexToPlay =
                 if (currentPlayingMedia == null) 0 else mediaMetadata.indexOf(itemToPlay)
 
@@ -264,13 +269,14 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             exoPlayer.prepare()
             exoPlayer.seekTo(indexToPlay, 0)
             exoPlayer.playWhenReady = playWhenReady
+
         }
 
     }
 
     inner class ExoPlayerEventListener : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
-            Log.i("CLick", "onPlaybackStateChanged: ")
+            Log.i("CLick", "onPlaybackStateChanged: $playbackState")
             when (playbackState) {
                 Player.STATE_BUFFERING, Player.STATE_READY -> {
                     notificationManager.showNotification(exoPlayer)

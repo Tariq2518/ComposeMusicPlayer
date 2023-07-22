@@ -89,8 +89,8 @@ class MusicViewModel @Inject constructor(
                 serviceConnection.transportControl.play()
             }
         } else {
-            Log.i("CLick", "playMusic: ")
-            serviceConnection.transportControl.playFromUri(currentMusic.uri, null)
+            Log.i("CLick", "playMusic: ${currentMusic.id}")
+            serviceConnection.transportControl.playFromMediaId(currentMusic.id.toString(), null)
         }
     }
 

@@ -1,10 +1,14 @@
 package com.tariq.composemusicplayer.ui.music
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +25,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import com.tariq.composemusicplayer.R
 import com.tariq.composemusicplayer.data.model.AudioItem
 import com.tariq.composemusicplayer.ui.theme.ComposeMusicPlayerTheme
 import kotlin.math.floor
@@ -40,7 +53,8 @@ val dummyMusicList = listOf(
         artist = "Test",
         data = "",
         duration = 12345,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
     AudioItem(
         uri = "".toUri(),
@@ -49,7 +63,8 @@ val dummyMusicList = listOf(
         artist = "Lab",
         data = "",
         duration = 25678,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
     AudioItem(
         uri = "".toUri(),
@@ -58,7 +73,8 @@ val dummyMusicList = listOf(
         artist = "Android Lab",
         data = "",
         duration = 8765454,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
     AudioItem(
         uri = "".toUri(),
@@ -67,7 +83,8 @@ val dummyMusicList = listOf(
         artist = "Kotlin Lab",
         data = "",
         duration = 23456,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
     AudioItem(
         uri = "".toUri(),
@@ -76,7 +93,8 @@ val dummyMusicList = listOf(
         artist = "Test Lab",
         data = "",
         duration = 65788,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
     AudioItem(
         uri = "".toUri(),
@@ -85,7 +103,8 @@ val dummyMusicList = listOf(
         artist = "Test Lab",
         data = "",
         duration = 234567,
-        title = "Android Programming"
+        title = "Android Programming",
+        artWork = null
     ),
 
     )
@@ -159,17 +178,29 @@ fun MusicItem(
         backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
 
         ) {
+        val context = LocalContext.current
+        val drawable = ContextCompat.getDrawable(context, R.drawable.music_icon)
+        val bitmap = drawable?.toBitmap()!!.asImageBitmap()
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
 
             ) {
+            Spacer(modifier = Modifier.size(4.dp))
+            Image(
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(10.dp),
+                bitmap = music.artWork?.asImageBitmap() ?: bitmap,
+                contentDescription = "image"
+            )
+            Spacer(modifier = Modifier.size(4.dp))
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(8.dp),
-
-                ) {
+            ) {
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = music.displayName,
@@ -261,8 +292,7 @@ fun PlayerController(
 
         ) {
         PlayerIcon(
-            icons = if (isMusicPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-            backgroundColor = MaterialTheme.colors.primary
+            icons = if (isMusicPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
         ) {
             onStart.invoke()
         }
@@ -287,15 +317,13 @@ fun ArtistInfo(
     Row(
         modifier = modifier.padding(4.dp),
         verticalAlignment = Alignment.CenterVertically,
+
     ) {
         PlayerIcon(
-            icons = Icons.Default.MusicNote,
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colors.onSurface
-            )
+            icons = ImageVector.vectorResource(id = R.drawable.music_icon),
+            color = androidx.compose.ui.graphics.Color.Red
         ) {}
-        Spacer(modifier = Modifier.size(4.dp))
+        Spacer(modifier = Modifier.size(12.dp))
         Column {
             Text(
                 text = music.title,
@@ -351,8 +379,7 @@ fun PlayerIcon(
 
 }
 
-
-
+@Preview(showSystemUi = true)
 @Composable
 fun MiniPlayer() {
     ComposeMusicPlayerTheme {
@@ -363,7 +390,7 @@ fun MiniPlayer() {
             isAudioPlaying = true,
             onStart = {
 /*TODO*/
- }) {
+            }) {
 
         }
 

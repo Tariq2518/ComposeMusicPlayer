@@ -5,66 +5,76 @@ import android.media.browse.MediaBrowser.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.tariq.composemusicplayer.data.MusicRepository
 import javax.inject.Inject
+import kotlin.math.log
 
 class MediaSource
 @Inject constructor(private val repository: MusicRepository) {
-    private val onReadyListener : MutableList<OnReadyListener> = mutableListOf()
+    private val onReadyListener: MutableList<OnReadyListener> = mutableListOf()
 
-    var audioMediaMetadata:List<MediaMetadataCompat> = emptyList()
+    var audioMediaMetadata: List<MediaMetadataCompat> = emptyList()
 
     private var state: AudioSourceState = AudioSourceState.STATE_CREATED
+        set(value) {
+            if (value == AudioSourceState.STATE_CREATED
+                || value == AudioSourceState.STATE_ERROR
+            ) {
+                synchronized(onReadyListener) {
+                    field = value
+                    onReadyListener.forEach { listener: OnReadyListener ->
+                        listener.invoke(isReady)
 
-    set(value){
-        if (value ==AudioSourceState.STATE_CREATED
-            || value == AudioSourceState.STATE_ERROR){
-            synchronized(onReadyListener){
-                field = value
-                onReadyListener.forEach {listener: OnReadyListener->
-                    listener.invoke(isReady)
-
+                    }
                 }
+            } else {
+                field = value
+
             }
-        }else{
-            field = value
-
         }
-    }
 
-    fun whenReady(listener: OnReadyListener):Boolean{
-        return if (state == AudioSourceState.STATE_INITIALIZED || state == AudioSourceState.STATE_CREATED){
+    fun whenReady(listener: OnReadyListener): Boolean {
+        Log.i("CLick", "whenReady: $listener -- $isReady")
+        if (state == AudioSourceState.STATE_INITIALIZING || state == AudioSourceState.STATE_CREATED) {
+            Log.i("CLick", "whenReady2: $state -- $isReady -- ")
             onReadyListener += listener
-            false
-        }else{
+            return false
+        } else {
             listener.invoke(isReady)
-            true
+            Log.i("CLick", "whenReady2: $state -- $isReady -- ")
+            return true
         }
     }
 
-    suspend fun load(){
+    suspend fun load() {
         state = AudioSourceState.STATE_INITIALIZING
         val data = repository.getAudioData()
-        audioMediaMetadata = data.map { audio->
+        audioMediaMetadata = data.map { audio ->
             MediaMetadataCompat.Builder()
                 .putString(
                     MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
-                    audio.id.toString())
+                    audio.id.toString()
+                )
                 .putString(
                     MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST,
-                    audio.artist)
+                    audio.artist
+                )
                 .putString(
                     MediaMetadataCompat.METADATA_KEY_MEDIA_URI,
-                    audio.uri.toString())
+                    audio.uri.toString()
+                )
                 .putString(
                     MediaMetadataCompat.METADATA_KEY_TITLE,
-                    audio.title)
+                    audio.title
+                )
                 .putString(
                     MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
-                    audio.displayName)
+                    audio.displayName
+                )
                 .putLong(
                     MediaMetadataCompat.METADATA_KEY_DURATION,
                     audio.duration.toLong()
@@ -75,10 +85,10 @@ class MediaSource
     }
 
     fun asMediaSource(dataSource: CacheDataSource.Factory):
-            ConcatenatingMediaSource{
+            ConcatenatingMediaSource {
         val concatenatingMediaSource: ConcatenatingMediaSource = ConcatenatingMediaSource()
 
-        audioMediaMetadata.forEach{ mediaMetadataCompat ->  
+        audioMediaMetadata.forEach { mediaMetadataCompat ->
             val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(
                 mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)
             )
@@ -93,7 +103,7 @@ class MediaSource
         return concatenatingMediaSource
     }
 
-    fun asMediaItem() = audioMediaMetadata.map { metadata->
+    fun asMediaItem() = audioMediaMetadata.map { metadata ->
         val description = MediaDescriptionCompat.Builder()
             .setTitle(metadata.description.title)
             .setMediaId(metadata.description.mediaId)
@@ -112,10 +122,10 @@ class MediaSource
     }
 
     private val isReady: Boolean
-    get() = state == AudioSourceState.STATE_INITIALIZED
+        get() = state == AudioSourceState.STATE_INITIALIZED
 }
 
-enum class AudioSourceState{
+enum class AudioSourceState {
     STATE_CREATED,
     STATE_INITIALIZING,
     STATE_INITIALIZED,
@@ -123,4 +133,4 @@ enum class AudioSourceState{
 
 }
 
-typealias OnReadyListener = (Boolean)->Unit
+typealias OnReadyListener = (Boolean) -> Unit
