@@ -1,7 +1,5 @@
 package com.tariq.composemusicplayer.media.exoplayer
 
-import android.media.browse.MediaBrowser.MediaItem
-import android.media.browse.MediaBrowser.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -83,8 +81,7 @@ class MediaSource
         }
         state = AudioSourceState.STATE_INITIALIZED
     }
-
-    fun asMediaSource(dataSource: CacheDataSource.Factory):
+    fun  asMediaSource(dataSource: CacheDataSource.Factory):
             ConcatenatingMediaSource {
         val concatenatingMediaSource: ConcatenatingMediaSource = ConcatenatingMediaSource()
 

@@ -3,8 +3,6 @@ package com.tariq.composemusicplayer.media.exoplayer
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
-import android.media.session.MediaController
-import android.service.notification.NotificationListenerService
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
@@ -13,7 +11,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.tariq.composemusicplayer.R
 import com.tariq.composemusicplayer.media.constans.Constants
 
-internal class MediaPlayerNotificationManager(
+internal class  MediaPlayerNotificationManager(
     context: Context,
     sessionToken: MediaSessionCompat.Token,
     notificationListener: PlayerNotificationManager.NotificationListener

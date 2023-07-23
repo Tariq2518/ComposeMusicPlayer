@@ -8,7 +8,6 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.Constraints
 import com.tariq.composemusicplayer.data.model.AudioItem
 import com.tariq.composemusicplayer.media.constans.Constants
 import com.tariq.composemusicplayer.media.service.MediaPlayerService

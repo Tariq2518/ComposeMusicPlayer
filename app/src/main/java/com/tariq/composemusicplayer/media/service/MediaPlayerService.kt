@@ -14,15 +14,14 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
-import com.tariq.composemusicplayer.media.constans.Constants
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import com.tariq.composemusicplayer.media.constans.Constants
 import com.tariq.composemusicplayer.media.exoplayer.MediaPlayerNotificationManager
 import com.tariq.composemusicplayer.media.exoplayer.MediaSource
 import dagger.hilt.android.AndroidEntryPoint
